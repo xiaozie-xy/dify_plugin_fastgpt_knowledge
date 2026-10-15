@@ -1,0 +1,224 @@
+identity:
+  name: fastgpt_knowledge_retrieval
+  author: xiaozie-xy
+  label:
+    en_US: FastGPT Knowledge Retrieval
+    zh_Hans: FastGPT 知识库检索
+description:
+  human:
+    en_US: Retrieve chunks from the FastGPT knowledge base identified by datasetId. Search parameters match the FastGPT searchTest API.
+    zh_Hans: 按 datasetId 检索指定的 FastGPT 知识库。检索参数与 FastGPT 的 searchTest 接口一致。
+  llm: Retrieve text chunks from a FastGPT knowledge base. datasetId selects the knowledge base and text is the search query.
+parameters:
+  - name: datasetId
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: datasetId
+      zh_Hans: 知识库 ID
+    human_description:
+      en_US: FastGPT dataset ID.
+      zh_Hans: FastGPT 知识库 ID。
+    llm_description: FastGPT dataset ID. Pass the ID that matches the current task. Do not guess this value.
+  - name: text
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: text
+      zh_Hans: 检索文本
+    human_description:
+      en_US: Content to search.
+      zh_Hans: 需要检索的内容。
+    llm_description: Search text sent to FastGPT as text. Do not include formatting instructions.
+  - name: queryImageUrls
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: queryImageUrls
+      zh_Hans: 图片临时 key
+    human_description:
+      en_US: "Optional FastGPT temp keys, separated by commas. Leave empty for text search. The request then sends queryImageUrls as an empty array. Public URLs and Dify file IDs are not accepted."
+      zh_Hans: 可选。FastGPT 预签名返回的临时 key，多个用逗号分隔。文本检索留空，请求里会发送空数组。不能填公网 URL 或 Dify 文件 ID。
+    llm_description: Optional comma-separated FastGPT temporary image keys. Leave empty for text-only search. Do not pass public URLs or Dify file IDs.
+  - name: limit
+    type: number
+    required: false
+    default: 5000
+    min: 1
+    max: 20000
+    form: form
+    label:
+      en_US: limit
+      zh_Hans: 最大 Token
+    human_description:
+      en_US: Maximum tokens in the cited result, from 1 to 20000. FastGPT uses a token budget instead of top K.
+      zh_Hans: 引用结果的最大 Token 数，范围 1 到 20000。FastGPT 用 Token 上限控制返回量，而不是 top K。
+  - name: similarity
+    type: number
+    required: false
+    default: 0
+    min: 0
+    max: 1
+    form: form
+    label:
+      en_US: similarity
+      zh_Hans: 最低相关度
+    human_description:
+      en_US: Minimum relevance from 0 to 1. FastGPT applies it to semantic search and to reranked results. 0 keeps every recalled chunk.
+      zh_Hans: 最低相关度，范围 0 到 1。语义检索和重排后的结果会用它过滤。0 表示不过滤。
+  - name: searchMode
+    type: select
+    required: false
+    default: embedding
+    form: llm
+    label:
+      en_US: searchMode
+      zh_Hans: 搜索模式
+    human_description:
+      en_US: "embedding is semantic search, fullTextRecall is full-text search, and mixedRecall searches both."
+      zh_Hans: embedding 是语义检索，fullTextRecall 是全文检索，mixedRecall 是混合检索。
+    llm_description: Search mode. Use embedding, fullTextRecall, or mixedRecall.
+    options:
+      - value: embedding
+        label:
+          en_US: embedding
+          zh_Hans: 语义检索
+      - value: fullTextRecall
+        label:
+          en_US: fullTextRecall
+          zh_Hans: 全文检索
+      - value: mixedRecall
+        label:
+          en_US: mixedRecall
+          zh_Hans: 混合检索
+  - name: embeddingWeight
+    type: number
+    required: false
+    default: 0.5
+    min: 0
+    max: 1
+    form: llm
+    label:
+      en_US: Semantic search weight
+      zh_Hans: 语义检索权重
+    human_description:
+      en_US: Semantic search weight from 0 to 1. Sent only when searchMode is mixedRecall. Default is 0.5.
+      zh_Hans: 语义检索权重，范围 0 到 1。仅在混合检索时发送。默认 0.5。
+  - name: usingReRank
+    type: boolean
+    required: false
+    default: false
+    form: llm
+    label:
+      en_US: usingReRank
+      zh_Hans: 使用重排
+    human_description:
+      en_US: Whether FastGPT reranks the result. The rerank model and weight are sent only when this is on.
+      zh_Hans: 是否让 FastGPT 重排结果。关闭时不发送重排模型和权重。
+  - name: rerankModelId
+    type: dynamic-select
+    required: false
+    form: llm
+    label:
+      en_US: rerankModelId
+      zh_Hans: 重排模型
+    human_description:
+      en_US: FastGPT rerank model. Save the plugin credentials successfully before opening this list. Sent only when rerank is on.
+      zh_Hans: FastGPT 重排模型。请先保存插件凭证，保存成功后再打开下拉。仅在启用重排时发送。
+  - name: rerankWeight
+    type: number
+    required: false
+    default: 0.5
+    min: 0
+    max: 1
+    form: llm
+    label:
+      en_US: rerankWeight
+      zh_Hans: 重排权重
+    human_description:
+      en_US: Rerank merge weight from 0 to 1. Sent only when rerank is on. Default is 0.5.
+      zh_Hans: 重排合并权重，范围 0 到 1。仅在启用重排时发送。默认 0.5。
+  - name: datasetSearchUsingExtensionQuery
+    type: boolean
+    required: false
+    default: false
+    form: llm
+    label:
+      en_US: datasetSearchUsingExtensionQuery
+      zh_Hans: 问题优化
+    human_description:
+      en_US: Ask FastGPT to rewrite the query before searching. The extension model and background are sent only when this is on.
+      zh_Hans: 是否让 FastGPT 在检索前优化问题。关闭时不发送问题优化模型和背景。
+  - name: datasetSearchExtensionModelId
+    type: dynamic-select
+    required: false
+    form: llm
+    label:
+      en_US: datasetSearchExtensionModelId
+      zh_Hans: 问题优化模型
+    human_description:
+      en_US: FastGPT model used to rewrite the query. Save the plugin credentials successfully before opening this list. The selected value is the FastGPT model ID.
+      zh_Hans: 用于问题优化的 FastGPT 模型。请先保存插件凭证，保存成功后再打开下拉。选中后提交的是 FastGPT 的模型 ID。
+  - name: datasetSearchExtensionBg
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: datasetSearchExtensionBg
+      zh_Hans: 问题优化背景
+    human_description:
+      en_US: Background text for query rewriting. When query extension is on, an empty value is still sent as an empty string.
+      zh_Hans: 问题优化时的背景说明。问题优化打开时，留空也会发送空字符串。
+output_schema:
+  type: object
+  properties:
+    result:
+      type: array
+      description: Retrieved chunks. content joins q and a. score prefers rerank, then embedding, full text, and RRF. score_details keeps type, value, and index. chunk_index and update_time come from the FastGPT chunk.
+      items:
+        type: object
+        properties:
+          content:
+            type: string
+          q:
+            type: string
+          a:
+            type: string
+          score:
+            type: number
+          score_details:
+            type: array
+            items:
+              type: object
+              properties:
+                type:
+                  type: string
+                value:
+                  type: number
+                index:
+                  type: number
+          id:
+            type: string
+          dataset_id:
+            type: string
+          collection_id:
+            type: string
+          source_name:
+            type: string
+          source_id:
+            type: string
+          chunk_index:
+            type: number
+          update_time:
+            type: string
+          position:
+            type: number
+    context:
+      type: string
+      description: Retrieved chunk text joined for an LLM prompt.
+extra:
+  python:
+    source: tools/fastgpt_knowledge_retrieval.py

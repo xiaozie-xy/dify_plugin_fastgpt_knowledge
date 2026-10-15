@@ -1,0 +1,32 @@
+version: 0.0.1
+type: plugin
+author: xiaozie-xy
+name: fastgpt_knowledge
+repo: https://github.com/xiaozie-xy/dify_plugin_fastgpt_knowledge
+contact: xiaozie-xy@foxmail.com
+label:
+  en_US: FastGPT Knowledge Retrieval
+  zh_Hans: FastGPT 知识库检索
+description:
+  en_US: Retrieve chunks from a FastGPT knowledge base chosen at runtime. Search settings follow the FastGPT searchTest parameters.
+  zh_Hans: 按运行时传入的知识库 ID 检索 FastGPT 知识库。检索参数与 FastGPT 的 searchTest 接口对齐。
+icon: icon.svg
+created_at: "2026-10-14T06:00:00Z"
+tags:
+  - search
+resource:
+  memory: 268435456
+plugins:
+  tools:
+    - provider/fastgpt_knowledge.yaml
+meta:
+  version: 0.0.1
+  minimum_dify_version: 1.17.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+privacy: ./PRIVACY.md

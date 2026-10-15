@@ -1,0 +1,43 @@
+identity:
+  author: xiaozie-xy
+  name: fastgpt_knowledge
+  label:
+    en_US: FastGPT Knowledge Retrieval
+    zh_Hans: FastGPT 知识库检索
+  description:
+    en_US: Search a FastGPT knowledge base selected by dataset ID at runtime.
+    zh_Hans: 按运行时传入的知识库 ID 检索 FastGPT 知识库。
+  icon: icon.svg
+  tags:
+    - search
+credentials_for_provider:
+  api_base:
+    type: text-input
+    required: true
+    label:
+      en_US: FastGPT Base URL
+      zh_Hans: FastGPT 地址
+    placeholder:
+      en_US: http://localhost:3000
+      zh_Hans: http://localhost:3000
+    help:
+      en_US: "FastGPT site URL without /api. Cloud example: https://cloud.fastgpt.cn. The plugin calls {base}/api/core/dataset/searchTest."
+      zh_Hans: "填写 FastGPT 站点地址，不要带 /api。云端示例：https://cloud.fastgpt.cn。插件会请求 {地址}/api/core/dataset/searchTest。"
+  api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: FastGPT API Key
+      zh_Hans: FastGPT API Key
+    placeholder:
+      en_US: fastgpt-xxxxxxxx
+      zh_Hans: fastgpt-xxxxxxxx
+    help:
+      en_US: "Create it under Account - API Keys. The account must be the dataset creator or a collaborator on that dataset. Any other account returns unAuthDataset. Do not use a key from an app publish page. Save the URL and this key successfully before opening a model dropdown."
+      zh_Hans: "在「账号 → Api 密钥」中生成。账号须是该知识库的创建者或协作者，否则检索会返回 unAuthDataset。不要使用应用发布页里的密钥。请先保存地址和密钥，保存成功后再打开模型下拉。"
+    url: https://doc.fastgpt.io/zh-CN/openapi/intro#%E5%A6%82%E4%BD%95%E8%8E%B7%E5%8F%96-api-key
+tools:
+  - tools/fastgpt_knowledge_retrieval.yaml
+extra:
+  python:
+    source: provider/fastgpt_knowledge.py
